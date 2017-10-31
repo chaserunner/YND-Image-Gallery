@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol GalleryImageViewDelegate {
+protocol GalleryImageViewDelegate : class {
     
     func galleryViewTapped(_ galleryView: GalleryImageView)
     func galleryViewPressed(_ galleryView: GalleryImageView)

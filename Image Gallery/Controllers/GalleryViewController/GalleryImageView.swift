@@ -9,30 +9,26 @@
 
 import UIKit
 
-class GalleryImageView: UIView, UIScrollViewDelegate {
+class GalleryImageView: UIView {
     
-    // MARK: - Internal properties
+    // MARK: - Properties
+    
     var delegate: GalleryImageViewDelegate?
     var photo: PhotoModel!
     var scrollView: UIScrollView!
     var imageView: UIImageView!
     var activityIndicator: UIActivityIndicatorView!
-    var isZoomed: Bool {
-        get {
-            return scrollView.zoomScale > scrollView.minimumZoomScale
-        }
-    }
     
     // MARK: - Private properties
-
+    
     fileprivate var scrollFrame: CGRect {
         get {
             return CGRect(x: 0, y: 0, width: frame.size.width, height: frame.size.height)
         }
     }
     
-    
     // MARK: - Initializers
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
     }
@@ -69,7 +65,6 @@ class GalleryImageView: UIView, UIScrollViewDelegate {
         scrollView.decelerationRate = UIScrollViewDecelerationRateFast
         scrollView.backgroundColor = UIColor.clear
         isUserInteractionEnabled = true
-        
         addSubview(scrollView)
     }
     
@@ -77,7 +72,6 @@ class GalleryImageView: UIView, UIScrollViewDelegate {
         imageView = UIImageView(frame: scrollFrame)
         imageView.contentMode = UIViewContentMode.scaleToFill
         imageView.backgroundColor = UIColor.clear
-        
         scrollView.addSubview(imageView)
     }
     
@@ -87,7 +81,6 @@ class GalleryImageView: UIView, UIScrollViewDelegate {
         activityIndicator.center = imageView.center
         activityIndicator.hidesWhenStopped = true
         activityIndicator.color = .white
-        
         addSubview(activityIndicator)
     }
     
@@ -111,53 +104,37 @@ class GalleryImageView: UIView, UIScrollViewDelegate {
     
     fileprivate func zoomToScale(_ newZoomScale: CGFloat, pointInView: CGPoint) {
         let scrollViewSize = bounds.size
-        
         let width = scrollViewSize.width / newZoomScale
         let height = scrollViewSize.height / newZoomScale
-        
         let x = pointInView.x - (width / 2.0)
         let y = pointInView.y - (height / 2.0)
-        
         let rectToZoomTo = CGRect(x: x, y: y, width: width, height: height);
-        
         scrollView.zoom(to: rectToZoomTo, animated: true)
     }
     
     fileprivate func centerImageViewToSuperView() {
         var zoomFrame = imageView.frame
-        
         if(zoomFrame.size.width < scrollView.bounds.size.width) {
             zoomFrame.origin.x = (scrollView.bounds.size.width - zoomFrame.size.width) / 2.0
-            
         } else {
             zoomFrame.origin.x = 0.0
-            
         }
-        
         if(zoomFrame.size.height < scrollView.bounds.size.height) {
             zoomFrame.origin.y = (scrollView.bounds.size.height - zoomFrame.size.height) / 2.0
-            
         } else {
             zoomFrame.origin.y = 0.0
-            
         }
-        
         imageView.frame = zoomFrame
-        
     }
     
     fileprivate func updateImageViewSize() {
         if let image = imageView.image {
             var imageSize = CGSize(width: image.size.width / image.scale, height: image.size.height / image.scale)
-            
             let widthRatio = imageSize.width / bounds.size.width
             let heightRatio = imageSize.height / bounds.size.height
             let imageScaleRatio = max(widthRatio, heightRatio)
-            
             imageSize = CGSize(width: imageSize.width / imageScaleRatio, height: imageSize.height / imageScaleRatio)
-            
             imageView.frame = CGRect(x: 0.0, y: 0.0, width: imageSize.width, height: imageSize.height)
-            
             restoreZoom(false)
             centerImageViewToSuperView()
         }
@@ -167,11 +144,9 @@ class GalleryImageView: UIView, UIScrollViewDelegate {
     // MARK: - Internal functions
     func zoomToPoint(_ pointInView: CGPoint) {
         var newZoomScale = scrollView.minimumZoomScale
-        
         if scrollView.zoomScale < (scrollView.maximumZoomScale / 2) {
             newZoomScale = 5.0
         }
-        
         zoomToScale(newZoomScale, pointInView: pointInView)
     }
     
@@ -203,8 +178,8 @@ class GalleryImageView: UIView, UIScrollViewDelegate {
         imageView.image = nil
     }
     
-    
     // MARK: - UIView methods
+    
     override func layoutSubviews() {
         scrollView.frame = scrollFrame
         scrollView.contentSize = scrollView.frame.size
@@ -212,8 +187,8 @@ class GalleryImageView: UIView, UIScrollViewDelegate {
         updateImageViewSize()
     }
     
-    
     // MARK: - UIGestureRecognizer handlers
+    
     @objc func viewPressed(_ recognizer: UILongPressGestureRecognizer) {
         if (recognizer.state == UIGestureRecognizerState.began) {
             if let delegate = delegate {
@@ -238,8 +213,12 @@ class GalleryImageView: UIView, UIScrollViewDelegate {
         zoomToPoint(pointInView)
     }
     
+}
+
+//  MARK: - UIScrollView delegate
+
+extension GalleryImageView : UIScrollViewDelegate {
     
-    //  MARK: - UIScrollView delegate
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return imageView
     }
@@ -248,7 +227,6 @@ class GalleryImageView: UIView, UIScrollViewDelegate {
         if (scrollView.zoomScale > scrollView.maximumZoomScale) {
             scrollView.zoomScale = scrollView.maximumZoomScale
         }
-        
         centerImageViewToSuperView()
     }
     
@@ -256,17 +234,12 @@ class GalleryImageView: UIView, UIScrollViewDelegate {
         if let delegate = delegate {
             if scrollView.zoomScale == scrollView.minimumZoomScale {
                 delegate.galleryViewDidRestoreZoom(self)
-                
             } else {
                 delegate.galleryViewDidZoomIn(self)
-                
             }
         }
-        
         let oldState = scrollView.isScrollEnabled
-        
         scrollView.isScrollEnabled = (scrollView.zoomScale > scrollView.minimumZoomScale)
-        
         if let delegate = delegate , scrollView.isScrollEnabled != oldState {
             if scrollView.isScrollEnabled {
                 delegate.galleryViewDidEnableScroll(self)
@@ -275,5 +248,6 @@ class GalleryImageView: UIView, UIScrollViewDelegate {
             }
         }
     }
+    
 }
 

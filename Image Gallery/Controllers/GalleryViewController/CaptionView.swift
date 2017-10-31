@@ -8,7 +8,7 @@
 
 import UIKit
 
-open class CaptionView: UIView {
+class CaptionView: UIView {
     
     fileprivate var isExpanded = false
 
@@ -27,8 +27,7 @@ open class CaptionView: UIView {
         setupView()
     }
     
-    /// Toggle the visibility and adjusts the view size
-    open func adjustView() {
+    func adjustView() {
         isExpanded = false
         captionLabel.numberOfLines = 1
         isHidden = titleLabel.text == nil && captionLabel.text == nil
@@ -42,15 +41,12 @@ open class CaptionView: UIView {
     
     fileprivate func setupView() {
         backgroundColor = UIColor(white: 0.0, alpha: 0.7)
-        
         titleLabel = UILabel()
         titleLabel.font = UIFont(name: "HelveticaNeue-Bold", size: 15)
         titleLabel.textColor = UIColor.white
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.isUserInteractionEnabled = false
-        
         addSubview(titleLabel)
-        
         captionLabel = UILabel()
         captionLabel.font = UIFont(name: "HelveticaNeue", size: 13)
         captionLabel.textColor = UIColor.gray
@@ -58,9 +54,7 @@ open class CaptionView: UIView {
         captionLabel.lineBreakMode = NSLineBreakMode.byTruncatingTail
         captionLabel.translatesAutoresizingMaskIntoConstraints = false
         captionLabel.isUserInteractionEnabled = false
-
         addSubview(captionLabel)
-        
         addLayoutConstraints()
     }
     
@@ -80,7 +74,6 @@ open class CaptionView: UIView {
         NSLayoutConstraint(item: captionLabel, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: self, attribute: NSLayoutAttribute.trailingMargin, multiplier: 1.0, constant: -5.0).isActive = true
     }
     
-    /// Called when the caption view is tapped
     @objc func viewTapped(_ recognizer: UITapGestureRecognizer) {
         if !isExpanded {
             isExpanded = true

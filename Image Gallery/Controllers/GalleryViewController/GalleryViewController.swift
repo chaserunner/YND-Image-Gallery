@@ -16,16 +16,6 @@ class GalleryViewController: UIViewController {
     fileprivate var photoViews: [GalleryImageView] = []
     fileprivate var datasource: ListTableViewDatasource!
     
-    fileprivate var isShowingLandscapeView: Bool {
-        let orientation = UIApplication.shared.statusBarOrientation
-        switch (orientation) {
-        case UIInterfaceOrientation.landscapeLeft, UIInterfaceOrientation.landscapeRight:
-            return true
-        default:
-            return false
-        }
-    }
-    
     fileprivate var isShowingActionControls: Bool {
         get {
             return !closeButton.isHidden
@@ -34,7 +24,6 @@ class GalleryViewController: UIViewController {
     
     fileprivate var activityController: UIActivityViewController!
     
-
     internal var displayedView: GalleryImageView {
         get {
             return photoViews[currentIndex]
@@ -44,9 +33,9 @@ class GalleryViewController: UIViewController {
     fileprivate var currentIndex: Int = 0
     fileprivate var pagingScrollView: UIScrollView!
     fileprivate var closeButton: UIButton!
-
+    
     fileprivate var captionView: CaptionView!
-
+    
     var displayedImageView: UIImageView {
         get {
             return displayedView.imageView
@@ -63,7 +52,7 @@ class GalleryViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
-
+    
     public convenience init(datasource: ListTableViewDatasource, index: Int = 0) {
         self.init(nibName: nil, bundle: nil)
         self.datasource = datasource
@@ -81,19 +70,16 @@ class GalleryViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         scrollToIndex(currentIndex, animated: false)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
         updateCaptionText()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
         captionView.layoutIfNeeded()
         captionView.setNeedsLayout()
     }
@@ -112,15 +98,6 @@ class GalleryViewController: UIViewController {
         return true
     }
     
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-        
-        coordinator.animate(alongsideTransition: { [weak self] _ in
-            self?.updateView(size)
-            }, completion: nil)
-    }
-    
-    
     // MARK: - Private functions
     
     fileprivate func setupView() {
@@ -130,14 +107,12 @@ class GalleryViewController: UIViewController {
         setupCloseButton()
         setupCaptionView()
         loadImagesNextToIndex(currentIndex)
-        
     }
     
     fileprivate func setupScrollView() {
         let avaiableSize = getInitialAvaiableSize()
         let scrollFrame = getScrollViewFrame(avaiableSize)
         let contentSize = getScrollViewContentSize(scrollFrame)
-        
         pagingScrollView = UIScrollView(frame: scrollFrame)
         pagingScrollView.isPagingEnabled = true
         pagingScrollView.showsHorizontalScrollIndicator = true
@@ -150,13 +125,11 @@ class GalleryViewController: UIViewController {
     fileprivate func setupPictures() {
         let avaiableSize = getInitialAvaiableSize()
         let scrollFrame = getScrollViewFrame(avaiableSize)
-        
         for i in 0 ..< photos.count {
             let photo = photos[i]
             let photoFrame = getPhotoFrame(scrollFrame, pictureIndex: i)
             let photoView = GalleryImageView(photo: photo.photo, frame: photoFrame)
             photoView.delegate = self
-            
             pagingScrollView.addSubview(photoView)
             photoViews.append(photoView)
         }
@@ -166,37 +139,22 @@ class GalleryViewController: UIViewController {
         if self.closeButton != nil {
             self.closeButton.removeFromSuperview()
         }
-        
         let avaiableSize = getInitialAvaiableSize()
         let closeButtonFrame = getCloseButtonFrame(avaiableSize)
-        
-        
         let closeButton = UIButton(frame: closeButtonFrame)
-        
-            closeButton.setTitle("+", for: UIControlState())
-            closeButton.titleLabel!.font = UIFont(name: "HelveticaNeue-Medium", size: 30)
-            closeButton.setTitleColor(.white, for: UIControlState())
-            closeButton.transform = CGAffineTransform(rotationAngle: .pi / 4)
-        
+        closeButton.setTitle("+", for: UIControlState())
+        closeButton.titleLabel!.font = UIFont(name: "HelveticaNeue-Medium", size: 30)
+        closeButton.setTitleColor(.white, for: UIControlState())
+        closeButton.transform = CGAffineTransform(rotationAngle: .pi / 4)
         closeButton.addTarget(self, action: #selector(closeButtonTouched), for: .touchUpInside)
-        
         var shouldBeHidden = false
-        
         if self.closeButton != nil {
             shouldBeHidden = closeButton.isHidden
         }
-        
         closeButton.isHidden = shouldBeHidden
-        
-        
         self.closeButton = closeButton
-        
         view.addSubview(self.closeButton)
     }
-    
-
-    
-
     
     fileprivate func setupCaptionView() {
         let avaiableSize = getInitialAvaiableSize()
@@ -216,13 +174,6 @@ class GalleryViewController: UIViewController {
             let innerView = photoViews[i]
             innerView.frame = getPhotoFrame(pagingScrollView.frame, pictureIndex: i)
         }
-
-        var popOverPresentationRect = getActionButtonFrame(view.frame.size)
-        popOverPresentationRect.origin.x += popOverPresentationRect.size.width
-        
-        activityController?.popoverPresentationController?.sourceView = view
-        activityController?.popoverPresentationController?.sourceRect = popOverPresentationRect
-        
         setupCloseButton()
         updateContentOffset()
         updateCaptionText()
@@ -334,56 +285,33 @@ class GalleryViewController: UIViewController {
         return CGRect(x: 0.0, y: availableSize.height - 70, width: availableSize.width, height: 70)
     }
     
-    fileprivate func getProgressViewFrame(_ avaiableSize: CGSize) -> CGRect {
-        return CGRect(x: 0.0, y: avaiableSize.height - 2, width: avaiableSize.width, height: 2)
-    }
-    
-    fileprivate func getProgressInnerViewFrame(_ progressFrame: CGRect) -> CGRect {
-        return CGRect(x: 0, y: 0, width: 0, height: progressFrame.size.height)
-    }
-    
     fileprivate func getCloseButtonFrame(_ avaiableSize: CGSize) -> CGRect {
         return CGRect(x: 0, y: 0, width: 50, height: 50)
     }
     
-    fileprivate func getActionButtonFrame(_ avaiableSize: CGSize) -> CGRect {
-        return CGRect(x: avaiableSize.width - 50, y: 0, width: 50, height: 50)
-    }
-    
-    fileprivate func getCustomButtonFrame(_ avaiableSize: CGSize, forIndex index: Int) -> CGRect {
-        let position = index + 2
-        
-        return CGRect(x: avaiableSize.width - CGFloat(50 * position), y: 0, width: 50, height: 50)
-    }
-    
     fileprivate func updateCaptionText () {
         let photo = photos[currentIndex]
-        
         captionView.titleLabel.text = photo.photo.user.name + " " + String(photo.count)
         captionView.captionLabel.text = "\(photo.photo.width)x\(photo.photo.height)"
-        
         captionView.adjustView()
     }
-    
     
     // MARK: - Internal functions
     @objc internal func closeButtonTouched(_ sender: AnyObject) {
         dismiss(animated: true, completion: nil)
     }
     
-    
-    
-    
     // MARK: - Public functions
     
-
     func scrollToIndex(_ index: Int, animated: Bool = true) {
         currentIndex = index
         loadImagesNextToIndex(currentIndex)
         pagingScrollView.setContentOffset(CGPoint(x: pagingScrollView.frame.size.width * CGFloat(index), y: 0), animated: animated)
     }
-
+    
 }
+
+//MARK:- UIScrollViewDelegate
 
 extension GalleryViewController: UIScrollViewDelegate {
     
@@ -402,13 +330,14 @@ extension GalleryViewController: UIScrollViewDelegate {
     
 }
 
+//MARK:- GalleryImageViewDelegate
+
 extension GalleryViewController: GalleryImageViewDelegate {
     
     func galleryViewTapped(_ scrollview: GalleryImageView) {
         let scrollView = photoViews[currentIndex].scrollView
         if scrollView?.zoomScale == scrollView?.minimumZoomScale {
             toggleControlsVisibility()
-            
         }
     }
     
