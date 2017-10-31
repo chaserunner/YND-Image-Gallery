@@ -7,13 +7,28 @@
 //
 
 import Foundation
+import UIKit
 
 class APIService {
     
-    func load<T>(resource: Resource<T>, completion: @escaping (T?) -> Void) {
+    func load<T: UIImage>(resource: Resource<T>, completion: @escaping (T?, Error?) -> Void) {
+        if let image = ImageCache.sharedInstance.image(forKey: resource.url.absoluteString){
+            completion((image as! T), nil)
+            return
+        }
         URLSession.shared.dataTask(with: resource.url) { data, _, error in
             let objects = data.flatMap(resource.parse)
-            completion(objects)
+            if let image = objects {
+                ImageCache.sharedInstance.setImage(image, forKey: resource.url.absoluteString)
+            }
+            completion(objects, error)
+            }.resume()
+    }
+    
+    func load<T>(resource: Resource<T>, completion: @escaping (T?, Error?) -> Void) {
+        URLSession.shared.dataTask(with: resource.url) { data, _, error in
+            let objects = data.flatMap(resource.parse)
+            completion(objects, error)
             }.resume()
     }
     

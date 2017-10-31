@@ -8,15 +8,15 @@
 
 import UIKit
 
-typealias PhotoWithAutorCount = (photo: PhotoModel, count: UInt)
+typealias PhotoWithAuthorCount = (photo: PhotoModel, count: UInt)
 
 class ListTableViewDatasource: NSObject, UITableViewDataSource {
     
     private var tableView : UITableView?
-    private var photos : [PhotoWithAutorCount] = []
+    private var photos : [PhotoWithAuthorCount] = []
     private var service :  APIService!
     
-    public var getPhotos : [PhotoWithAutorCount] {
+    public var getPhotos : [PhotoWithAuthorCount] {
         return photos
     }
     
@@ -24,24 +24,25 @@ class ListTableViewDatasource: NSObject, UITableViewDataSource {
         tv.dataSource  = self
         self.service = service
         self.tableView = tv
-        service.load(resource: PhotoModel.all) { array in
-            self.photos = []
+        service.load(resource: PhotoModel.all) { [weak self] array, error in
+            guard error == nil else {return}
+            self?.photos = []
             if let array = array, !array.isEmpty {
                 var dict = [String: UInt]()
                 for photo in array {
                     guard dict[photo.user.id] == nil else {
                         dict[photo.user.id]! += 1
-                        let photoWithAutorCount = PhotoWithAutorCount(photo: photo, count: dict[photo.user.id]!)
-                        self.photos.append(photoWithAutorCount)
+                        let photoWithAutorCount = PhotoWithAuthorCount(photo: photo, count: dict[photo.user.id]!)
+                        self?.photos.append(photoWithAutorCount)
                         continue
                     }
                     dict[photo.user.id] = 1
-                    let photoWithAutorCount = PhotoWithAutorCount(photo: photo, count: 1)
-                    self.photos.append(photoWithAutorCount)
+                    let photoWithAutorCount = PhotoWithAuthorCount(photo: photo, count: 1)
+                    self?.photos.append(photoWithAutorCount)
                 }
                 //self.photos = array
             }
-            self.reload()
+            self?.reload()
         }
     }
     

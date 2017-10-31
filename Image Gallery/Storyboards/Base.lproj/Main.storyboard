@@ -61,7 +61,6 @@
                                             <outlet property="indicator" destination="UkA-jx-xeh" id="cuC-ZA-CAl"/>
                                             <outlet property="thumbnail" destination="1d0-CH-zWU" id="bam-R3-RGB"/>
                                             <outlet property="title" destination="ql4-cu-FwL" id="mdk-eB-3ph"/>
-                                            <segue destination="zd9-N4-QPo" kind="presentation" id="n4k-2h-AS7"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -85,21 +84,6 @@
             </objects>
             <point key="canvasLocation" x="476" y="133.5832083958021"/>
         </scene>
-        <!--Gallery View Controller-->
-        <scene sceneID="PtT-fW-nAy">
-            <objects>
-                <viewController id="zd9-N4-QPo" customClass="GalleryViewController" customModule="Image_Gallery" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="tMp-4i-NKf">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <viewLayoutGuide key="safeArea" id="auf-92-S19"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="7EJ-VF-VXv" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1194" y="134"/>
-        </scene>
         <!--Navigation Controller-->
         <scene sceneID="O1B-ic-Ag2">
             <objects>
@@ -111,7 +95,7 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="hj2-40-7Jm"/>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="9KI-qY-5Zj"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="j2J-KJ-Otn" userLabel="First Responder" sceneMemberID="firstResponder"/>

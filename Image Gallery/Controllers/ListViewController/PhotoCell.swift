@@ -22,14 +22,15 @@ class PhotoCell: UITableViewCell {
         title.text = photo.user.name
     }
     
-    func updateWith(_ photoWithAutorCount: PhotoWithAutorCount, service: APIService = APIService()){
+    func updateWith(_ photoWithAutorCount: PhotoWithAuthorCount, service: APIService = APIService()){
         thumbnail.backgroundColor = UIColor(photoWithAutorCount.photo.color)
         title.text = photoWithAutorCount.photo.user.name + " " + String(photoWithAutorCount.count)
         self.service = service
-        self.service.load(resource: photoWithAutorCount.photo.thumbnail) { (image) in
+        self.service.load(resource: photoWithAutorCount.photo.thumbnail) { [weak self] image, error in
+            guard error == nil else {return}
             DispatchQueue.main.async {
-                self.indicator.stopAnimating()
-                self.thumbnail.image = image
+                self?.indicator.stopAnimating()
+                self?.thumbnail.image = image
             }
         }
     }

@@ -17,17 +17,21 @@ class ListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         datasource.update(tableView)
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let indePath = tableView.indexPathForSelectedRow, let destination = segue.destination as? GalleryViewController {
-            destination.index = indePath.row
-            destination.datasource = datasource
-        }
+        tableView.delegate = self
     }
     
     override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
         return datasource.getPhotos.count > 0
+    }
+    
+}
+
+extension ListViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let vc = GalleryViewController(datasource: self.datasource, index: indexPath.row)
+        self.navigationController?.present(vc, animated: true, completion: nil)
+        tableView.deselectRow(at: indexPath, animated: true)
     }
     
 }
