@@ -20,12 +20,12 @@ class ListTableViewDatasource: NSObject, UITableViewDataSource {
         return photos
     }
     
-    func update(_ tv: UITableView, with service: APIService = APIService()){
+    func update(_ tv: UITableView, with service: APIService = APIService(), completion: @escaping ((Error?) -> Void)) {
         tv.dataSource  = self
         self.service = service
         self.tableView = tv
         service.load(resource: PhotoModel.all) { [weak self] array, error in
-            guard error == nil else {return}
+            guard error == nil else { completion(error); return }
             self?.photos = []
             if let array = array, !array.isEmpty {
                 var dict = [String: UInt]()
@@ -43,6 +43,7 @@ class ListTableViewDatasource: NSObject, UITableViewDataSource {
                 //self.photos = array
             }
             self?.reload()
+            completion(nil)
         }
     }
     
