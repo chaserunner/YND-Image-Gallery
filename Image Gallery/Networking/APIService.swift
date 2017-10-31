@@ -16,7 +16,9 @@ class APIService {
             completion((image as! T), nil)
             return
         }
+        showLoader()
         URLSession.shared.dataTask(with: resource.url) { data, _, error in
+            self.hideloader()
             let objects = data.flatMap(resource.parse)
             if let image = objects {
                 ImageCache.sharedInstance.setImage(image, forKey: resource.url.absoluteString)
@@ -26,10 +28,20 @@ class APIService {
     }
     
     func load<T>(resource: Resource<T>, completion: @escaping (T?, Error?) -> Void) {
+        showLoader()
         URLSession.shared.dataTask(with: resource.url) { data, _, error in
+            self.hideloader()
             let objects = data.flatMap(resource.parse)
             completion(objects, error)
             }.resume()
+    }
+    
+    fileprivate func showLoader() {
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
+    }
+    
+    fileprivate func hideloader() {
+        UIApplication.shared.isNetworkActivityIndicatorVisible = false
     }
     
 }
